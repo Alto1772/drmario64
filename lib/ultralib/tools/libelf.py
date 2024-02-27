@@ -5,7 +5,11 @@
 
 import struct
 
-from mdebug import EcoffHDRR, EcoffFdr, EcoffPdr, EcoffLiner, EcoffSymr
+from mdebug import MdebugVersion, EcoffHDRR, EcoffFdr
+from STABS import STABSContext
+
+# 1 = IDO , 2 = EGCS
+MDEBUG_DEFAULT_VERSION = MdebugVersion.EGCS
 
 # =====================================================================================================
 # Utility
@@ -264,10 +268,16 @@ SYM_NDX = {
 # =====================================================================================================
 
 # EM_MIPS
-R_MIPS_32   = 2 #  Write the 32 bit address of the symbol
-R_MIPS_26   = 4 # Write the 26 bit address of the symbol divided by four (for relocating branch instructions). Fail if address won't fit
-R_MIPS_HI16 = 5 # Write the high 16 bits of the address of the symbol
-R_MIPS_LO16 = 6 # Write the low 16 bits of the address of the symbol
+R_MIPS_32      = 2 #  Write the 32 bit address of the symbol
+R_MIPS_26      = 4 # Write the 26 bit address of the symbol divided by four (for relocating branch instructions). Fail if address won't fit
+R_MIPS_HI16    = 5 # Write the high 16 bits of the address of the symbol
+R_MIPS_LO16    = 6 # Write the low 16 bits of the address of the symbol
+R_MIPS_GPREL16 = 7
+R_MIPS_LITERAL = 8
+R_MIPS_GOT16   = 9
+R_MIPS_PC16    = 10
+R_MIPS_CALL16  = 11
+R_MIPS_GPREL32 = 12
 
 # EM_POWERPC
 R_PPC_NONE        = 0   # Do nothing. Skip this entry
@@ -290,10 +300,16 @@ R_DOLPHIN_MRKREF  = 204 # Unknown
 
 RELOC_TYPE = {
     EM_MIPS : {
-        R_MIPS_32   : 'R_MIPS_32',
-        R_MIPS_26   : 'R_MIPS_26',
-        R_MIPS_HI16 : 'R_MIPS_HI16',
-        R_MIPS_LO16 : 'R_MIPS_LO16'
+        R_MIPS_32      : 'R_MIPS_32',
+        R_MIPS_26      : 'R_MIPS_26',
+        R_MIPS_HI16    : 'R_MIPS_HI16',
+        R_MIPS_LO16    : 'R_MIPS_LO16',
+        R_MIPS_GPREL16 : 'R_MIPS_GPREL16',
+        R_MIPS_LITERAL : 'R_MIPS_LITERAL',
+        R_MIPS_GOT16   : 'R_MIPS_GOT16',
+        R_MIPS_PC16    : 'R_MIPS_PC16',
+        R_MIPS_CALL16  : 'R_MIPS_CALL16',
+        R_MIPS_GPREL32 : 'R_MIPS_GPREL32',
     },
     EM_POWERPC : {
         R_PPC_NONE        : 'R_PPC_NONE',
@@ -999,11 +1015,13 @@ class MdebugSection(Section):
     """
     MIPS Debugging Section
     """
-    def __init__(self, header, elf_file, index):
+    def __init__(self, header, elf_file, index, mdebug_version=MDEBUG_DEFAULT_VERSION):
         super().__init__(header, elf_file, index)
         self.parent = self.elf_file
-        self.hdrr = EcoffHDRR(self.data)
- 
+
+        self.hdrr = EcoffHDRR(self.data, mdebug_version)
+        self.stabs_ctx = STABSContext()
+
         self.fdrs = []
         for i in range(self.hdrr.ifdMax):
             fdr = EcoffFdr.from_binary(self, i)
@@ -1053,7 +1071,7 @@ class ReginfoSection(Section):
 # =====================================================================================================
 
 class ElfFile:
-    def __init__(self, data):
+    def __init__(self, data, mdebug_version=MDEBUG_DEFAULT_VERSION):
         def init_section(i):
             offset = self.elf_header.e_shoff + i * self.elf_header.e_shentsize
             section_type = struct.unpack(">I", data[offset + 4:][:4])[0]
@@ -1066,7 +1084,7 @@ class ElfFile:
             elif section_type == SHT_STRTAB:
                 return StrtabSection(header_data, self, i)
             elif section_type == SHT_MIPS_DEBUG:
-                return MdebugSection(header_data, self, i)
+                return MdebugSection(header_data, self, i, mdebug_version)
             elif section_type == SHT_MIPS_REGINFO:
                 return ReginfoSection(header_data, self, i)
             else:

@@ -41,8 +41,12 @@
 #include "seq.h"
 
 // TODO: this comes from a header
+#ifndef BBPLAYER
 #ident "$Revision: 1.17 $"
-
+#else
+#ident "$Revision: 1.1 $"
+#endif
+#line 46
 
 static  ALMicroTime     __seqpVoiceHandler(void *node);
 static  void            __handleMIDIMsg(ALSeqPlayer *seqp, ALEvent *event);
@@ -785,7 +789,9 @@ void __handleMIDIMsg(ALSeqPlayer *seqp, ALEvent *event)
 void __handleMetaMsg(ALSeqPlayer *seqp, ALEvent *event)
 {
     ALTempoEvent *tevt = &event->msg.tempo;
-    ALEvent      evt;
+#ifndef BBPLAYER
+    ALEvent      evt; // TODO BBPLAYER ?
+#endif
     s32          tempo;
 
     if (event->msg.tempo.status == AL_MIDI_Meta)
@@ -902,7 +908,9 @@ ALSound *__lookupSoundQuick(ALSeqPlayer *seqp, u8 key, u8 vel, u8 chan)
     s32 i;
     ALKeyMap *keymap;
 #if BUILD_VERSION < VERSION_J
-#line 885
+#line 883
+#else
+#line 906
 #endif
     assert(inst != NULL);       /* sct 10/31/95 - If inst is NULL, then the seqp probably wasn't setup correctly. */
 

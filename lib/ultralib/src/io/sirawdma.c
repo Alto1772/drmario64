@@ -2,57 +2,21 @@
 #include "assert.h"
 #include "siint.h"
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// Adjust line numbers to match assert
-#if BUILD_VERSION < VERSION_J
-#line 49
+// TODO: this comes from a header
+#ifndef BBPLAYER
+#ident "$Revision: 1.17 $"
+#else
+#ident "$Revision: 1.1 $"
 #endif
 
-// TODO: this comes from a header
-#ident "$Revision: 1.17 $"
+extern u32 __osBbIsBb;
 
 s32 __osSiRawStartDma(s32 direction, void* dramAddr) {
+#if BUILD_VERSION < VERSION_J
+#line 52
+#else
+#line 55
+#endif
     assert(((u32)dramAddr & 0x3) == 0);
 
 #if BUILD_VERSION >= VERSION_J
@@ -72,6 +36,15 @@ s32 __osSiRawStartDma(s32 direction, void* dramAddr) {
     IO_WRITE(SI_DRAM_ADDR_REG, osVirtualToPhysical(dramAddr));
 
     if (direction == OS_READ) {
+#ifdef BBPLAYER
+        if (__osBbIsBb) {
+            register u32 mask = __osDisableInt();
+
+            skKeepAlive();
+
+            __osRestoreInt(mask);
+        }
+#endif
         IO_WRITE(SI_PIF_ADDR_RD64B_REG, PIF_RAM_START);
     } else {
         IO_WRITE(SI_PIF_ADDR_WR64B_REG, PIF_RAM_START);

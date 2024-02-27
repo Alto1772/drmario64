@@ -1,6 +1,11 @@
 #include "PR/os_internal.h"
 #include "controller.h"
 
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
 #if BUILD_VERSION >= VERSION_J
 
 s32 osPfsRepairId(OSPfs* pfs) {
@@ -30,7 +35,7 @@ s32 osPfsRepairId(OSPfs *pfs) {
     s32 ret;
     __OSPackId *id;
 
-    SET_ACTIVEBANK_TO_ZERO;
+    SET_ACTIVEBANK_TO_ZERO();
     ERRCK(__osContRamRead(pfs->queue, pfs->channel, 1, (u8*)&temp));
     __osIdCheckSum((u16*)&temp, &sum, &isum);
     id = (__OSPackId*)&temp;

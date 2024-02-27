@@ -3,11 +3,21 @@
 #include "controller.h"
 #include "controller_gbpak.h"
 
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
+#ifndef BBPLAYER
 OSTimer __osGbpakTimer;
 OSMesgQueue __osGbpakTimerQ ALIGNED(8);
 OSMesg __osGbpakTimerMsg;
+#endif
 
 s32 osGbpakInit(OSMesgQueue* mq, OSPfs* pfs, int channel) {
+#ifdef BBPLAYER
+    return PFS_ERR_DEVICE;
+#else
     int i;
     s32 ret;
     u8 temp[BLOCKSIZE];
@@ -87,4 +97,5 @@ s32 osGbpakInit(OSMesgQueue* mq, OSPfs* pfs, int channel) {
     pfs->dir_size = 0xFF;
 
     return 0;
+#endif
 }

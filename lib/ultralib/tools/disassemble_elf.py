@@ -202,7 +202,8 @@ class MipsDisasm:
                     print(f"// compiler generated")
                     if self.cur_file is None:
                         print(f".version \"01.01\"")
-                    if self.advance_file():
+                    self.advance_file()
+                    if self.cur_file is not None:
                         print(f".file 1 \"{self.cur_file.name}\"")
 
                     comment_string = None
@@ -240,10 +241,24 @@ class MipsDisasm:
                 if rel.rel_type == R_MIPS_26:
                     if insn.id == MIPS_INS_JAL:
                         op_str = rel.relocated_symbol.name
-                        if op_str == ".text" and cur_fdr is not None:
-                            pdr = cur_fdr.pdr_foraddr(insn.target)
-                            if pdr is not None:
-                                op_str = pdr.name
+                        if op_str == ".text":
+                            # static function call, lookup name
+
+                            # default name if not found
+                            op_str = f".text + 0x{insn.target:X}"
+
+                            # first try symtab
+                            for sym in self.elf_file.symtab.symbol_entries:
+                                if sym.parent_section.name == ".text" and sym.st_value == insn.target and sym.type == ST_FUNC:
+                                    op_str = sym.name
+                                    break
+                            else:
+                                # then try mdebug if present
+                                if cur_fdr is not None:
+                                    pdr = cur_fdr.pdr_foraddr(insn.target)
+                                    if pdr is not None:
+                                        op_str = cur_fdr.pdr_foraddr(insn.target).name
+
                     elif insn.id != MIPS_INS_J: # Branch labels for j instructions are also R_MIPS_26 relocations
                         assert False , f"Got unexpected R_MIPS_26 relocation {insn.id}"
                 elif rel.rel_type == R_MIPS_HI16:
@@ -265,7 +280,7 @@ class MipsDisasm:
                         addend = 0
                     addend_str = f" + 0x{addend:X}" if addend != 0 else ""
 
-                    if insn.id == MIPS_INS_ADDIU:
+                    if insn.id in [MIPS_INS_ADDIU, MIPS_INS_DADDIU]:
                         op_str = f"{insn.abi.gpr_names[insn.rt]}, {insn.abi.gpr_names[insn.rs]}, %lo({rel_name}{addend_str})"
                     elif insn.id in MIPS_LOAD_STORE_INSNS:
                         if insn.id in MIPS_FP_LOAD_STORE_INSNS:

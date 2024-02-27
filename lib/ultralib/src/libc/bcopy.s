@@ -3,7 +3,8 @@
 #include "sys/regdef.h"
 
 .text
-#ifdef __sgi
+
+#if defined(BBPLAYER) || defined(__sgi)
 WEAK(bcopy, _bcopy)
 #else
 #define _bcopy bcopy
@@ -138,8 +139,8 @@ backwards_bytecopy:
     sb v0, 0(a1)
     addiu a1, a1, -1
     bne a0, v1,99b
-
     move v0, a3
+
     jr ra
 backalignable:
     beqz v0, backwards

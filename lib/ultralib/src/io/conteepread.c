@@ -3,13 +3,48 @@
 #include "controller.h"
 #include "siint.h"
 
-OSPifRam __osEepPifRam ALIGNED(16);
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
+extern u32 __osBbEepromAddress;
+extern u32 __osBbEepromSize;
+
+OSPifRam __osEepPifRam BBALIGNED(16);
 #if BUILD_VERSION >= VERSION_L
+#ifndef BBPLAYER
 s32 __osEepromRead16K;
 #endif
+#endif
+
 static void __osPackEepReadData(u8 address);
 
 s32 osEepromRead(OSMesgQueue* mq, u8 address, u8* buffer) {
+#ifdef BBPLAYER
+    s32 ret = 0;
+
+	__osSiGetAccess();
+
+    if (__osBbEepromSize == 0x00000200) {
+        if (address >= 0x40U) {
+            ret = -1;
+        }
+    } else if (__osBbEepromSize != 0x00000800) {
+        ret = 8;
+    }
+
+    if (ret == 0) {
+        int i;
+
+        for (i = 0; i < 8; i++) {
+            buffer[i] = *(u8*)(__osBbEepromAddress + (address * 8) + i);
+        }
+    }
+
+	__osSiRelAccess();
+	return ret;
+#else
     s32 ret = 0;
     int i = 0;
     u16 type;
@@ -103,8 +138,10 @@ s32 osEepromRead(OSMesgQueue* mq, u8 address, u8* buffer) {
     }
     __osSiRelAccess();
     return ret;
+#endif
 }
 
+#ifndef BBPLAYER
 static void __osPackEepReadData(u8 address) {
     u8* ptr = (u8*)&__osEepPifRam.ramarray;
     __OSContEepromFormat eepromformat;
@@ -137,3 +174,4 @@ static void __osPackEepReadData(u8 address) {
     ptr += sizeof(__OSContEepromFormat);
     ptr[0] = CONT_CMD_END;
 }
+#endif

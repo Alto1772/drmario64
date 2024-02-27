@@ -25,12 +25,17 @@
 #endif
 
 #undef  PRINTF
+#ifdef BBPLAYER
+#define PRINTF      osSyncPrintf
+#else
 #define PRINTF      rmonPrintf
+#endif
 
-
+#ifndef BBPLAYER
 #define TX_MAX		100
 static u32	textures[TX_MAX] ALIGNED(8);
 static u32	numtextures;
+#endif
 
 #define UNSEG_ADDR(sa)	((u32 *) (((globp)?				   \
 			(((int)(sa) & 0x00ffffff) + 			   \
@@ -232,7 +237,7 @@ gtDumpTurbo(OSTask *tp,u8 flags)
 	
 	if (flags & GT_DUMPTURBO_HANGAFTER) {
 		for (i=0; i<1000;i++) 
-			rmonPrintf("=======================================\n");
+			PRINTF("=======================================\n");
 		while(1);
 	}
 		

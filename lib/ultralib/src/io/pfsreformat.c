@@ -2,6 +2,11 @@
 #include "controller.h"
 #include "siint.h"
 
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
 s32 osPfsReFormat(OSPfs* pfs, OSMesgQueue* queue, int channel) {
     int j;
     int i;
@@ -23,7 +28,7 @@ s32 osPfsReFormat(OSPfs* pfs, OSMesgQueue* queue, int channel) {
     __osSiRelAccess();
     ERRCK(__osGetId(pfs));
 
-    SET_ACTIVEBANK_TO_ZERO;
+    SET_ACTIVEBANK_TO_ZERO();
 
     for (j = 0; j < ARRLEN(tmp_data); j++) {
         tmp_data[j] = 0;

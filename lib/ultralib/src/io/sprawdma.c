@@ -3,59 +3,19 @@
 #include "../os/osint.h"
 #include "assert.h"
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// Adjust line numbers to match assert
-#if BUILD_VERSION < VERSION_J
-#line 52
+// TODO: this comes from a header
+#ifndef BBPLAYER
+#ident "$Revision: 1.17 $"
+#else
+#ident "$Revision: 1.1 $"
 #endif
 
-// TODO: this comes from a header
-#ident "$Revision: 1.17 $"
-
 s32 __osSpRawStartDma(s32 direction, u32 devAddr, void* dramAddr, u32 size) {
+#if BUILD_VERSION < VERSION_J
+#line 55
+#else
+#line 58
+#endif
     assert(((u32)devAddr & 0x7) == 0);
     assert(((u32)dramAddr & 0x7) == 0);
     assert(((u32)size & 0x7) == 0);
