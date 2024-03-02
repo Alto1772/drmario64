@@ -1,4 +1,5 @@
 #include "macros.h"
+#include "PR/os_version.h"
 #include "PR/os_internal.h"
 #include "PR/ultraerror.h"
 #include "PR/rcp.h"
@@ -66,7 +67,7 @@ void osCreateViManager(OSPri pri) {
     __osViDevMgr.acsQueue = NULL;
     __osViDevMgr.dma = NULL;
     __osViDevMgr.edma = NULL;
-#ifdef BBPLAYER
+#if defined(BBPLAYER) && BUILD_VERSION >= VERSION_IQUE_V15
     osCreateThread(&viThread, 0xD49, viMgrMain, &__osViDevMgr, &viThreadStack[OS_VIM_STACKSIZE], pri);
 #else
     osCreateThread(&viThread, 0, viMgrMain, &__osViDevMgr, &viThreadStack[OS_VIM_STACKSIZE], pri);

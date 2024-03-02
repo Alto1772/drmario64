@@ -1,3 +1,4 @@
+#include "PR/os_version.h"
 #include "PR/R4300.h"
 #include "sys/asm.h"
 #include "sys/regdef.h"
@@ -32,8 +33,13 @@ ABS(__osBbStateName, 0x800003a4)
 ABS(__osBbStateDirty, 0x800003b4)
 ABS(__osBbAuxDataLimit, 0x800003b8)
 
-/* padded to 0x60 in the object file */
+/* padded to 0x90 in the object file */
+#if BUILD_VERSION >= VERSION_IQUE_V15
 .space 0x90
+#else
+.space 0x70
+#endif
+
 #else
 /* padded to 0x60 in the object file */
 .space 0x60

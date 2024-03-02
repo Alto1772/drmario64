@@ -26,13 +26,15 @@ extern u32 __osBbFlashAddress;
 extern u32 __osBbSramSize;
 extern u32 __osBbSramAddress;
 
+#if BUILD_VERSION >= VERSION_IQUE_V15
 char __osBbLibVersion[] = "libultra 12/06/04 08:28:27";
+#endif
 #endif
 
 OSTime osClockRate = OS_CLOCK_RATE;
 s32 osViClock = VI_NTSC_CLOCK;
 u32 __osShutdown = 0;
-#ifdef BBPLAYER
+#if defined(BBPLAYER) && BUILD_VERSION >= VERSION_IQUE_V15
 u32 __osShutdownTime = 0;
 #endif
 u32 __OSGlobalIntMask = OS_IM_ALL;
@@ -116,7 +118,12 @@ void INITIALIZE_FUNC() {
         osRomType = 0;
         osResetType = 0;
         osVersion = 1;
-    } else {
+#if BUILD_VERSION < VERSION_IQUE_V15
+        osMemSize = 0x400000;
+#endif
+    }
+
+    if (!__osBbIsBb) {
 #endif
     while (__osSiRawReadIo(PIF_RAM_END - 3, &pifdata)) { //last byte of joychannel ram
         ;
@@ -181,9 +188,11 @@ void INITIALIZE_FUNC() {
         __osBbPakAddress[2] = 0;
         __osBbPakAddress[3] = 0;
         __osBbFlashAddress = 0x803E0000;
-        __osBbSramSize = 0x20000;
-        __osBbSramAddress = 0x803E0000;
-    } else {
+        __osBbSramSize = __osBbFlashSize;
+        __osBbSramAddress = __osBbFlashAddress;
+    }
+
+    if (__osBbIsBb) {
         IO_WRITE(PI_64_REG, IO_READ(PI_64_REG) & 0x7FFFFFFF);
         IO_WRITE(MI_3C_REG, 0x20000);
         IO_WRITE(SI_0C_REG, 0);

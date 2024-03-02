@@ -545,7 +545,7 @@ no_rdb_mesg:
     li      t2, EXC_INT
     bne     t1, t2, panic
 
-#ifdef BBPLAYER
+#if defined(BBPLAYER) && BUILD_VERSION >= VERSION_IQUE_V15
     /* Check for pending reset */
     la      t1, __osShutdown
     lw      t2, (t1)
@@ -842,7 +842,7 @@ prenmi:
 firstnmi:
     li      t2, 1
     sw      t2, 0(t1) /* __osShutdown */
-#ifdef BBPLAYER
+#if defined(BBPLAYER) && BUILD_VERSION >= VERSION_IQUE_V15
     /* Save reset time */
 STAY2(mfc0  t2, C0_COUNT)
     la      t1, __osShutdownTime

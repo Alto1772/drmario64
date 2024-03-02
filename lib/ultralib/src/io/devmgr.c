@@ -88,7 +88,7 @@ void __osDevMgrMain(void* args) {
 #ifdef BBPLAYER
                     if (__osBbIsBb == TRUE && ((u32)mb->dramAddr & 0x7F) >= 0x60) {
                         check = TRUE;
-                        ret = dm->dma(OS_READ, mb->devAddr, 0x80600000, mb->size);
+                        ret = dm->dma(OS_READ, mb->devAddr, (void*)0x80600000, mb->size);
                         break;
                     }
 #endif
@@ -103,7 +103,7 @@ void __osDevMgrMain(void* args) {
 #ifdef BBPLAYER
                     if (__osBbIsBb == TRUE && ((u32)mb->dramAddr & 0x7F) >= 0x60) {
                         check = TRUE;
-                        ret = dm->edma(mb->piHandle, OS_READ, mb->devAddr, 0x80600000, mb->size);
+                        ret = dm->edma(mb->piHandle, OS_READ, mb->devAddr, (void*)0x80600000, mb->size);
                         break;
                     }
 #endif
