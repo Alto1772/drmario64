@@ -175,8 +175,8 @@ DBGFLAGS        := -ggdb
 MIPS_VERSION    := -mips2
 OUT_ENCODING    := EUC-CN
 CHAR_SIGN       := -fsigned-char
-# libultra 2.0L
-LIBULTRA_VERSION:= 9
+# libultra 2.0L ique_v1.5
+LIBULTRA_VERSION:= 15
 endif
 
 BUILD_DEFINES   += -DBUILD_VERSION=$(LIBULTRA_VERSION)

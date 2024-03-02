@@ -1,6 +1,11 @@
 #include "version.h"
 #include "libultra.h"
 
+#ifdef VERSION_CN
+#undef BUILD_VERSION
+#define BUILD_VERSION 9
+#endif
+
 typedef struct RomHeader {
     /* 0x00 */ u32 unk_00; // PI BSB Domain 1 register
     /* 0x04 */ u32 clockrate;

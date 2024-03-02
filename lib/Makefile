@@ -49,13 +49,13 @@ COMPILER_DIR    := ../tools/gcc_egcs/$(DETECTED_OS)/1.1.2-4
 endif
 CC              := COMPILER_PATH=$(COMPILER_DIR) $(COMPILER_DIR)/gcc
 
-STRIP      := $(CROSS)strip
-
+STRIP       := $(CROSS)strip
+PATCH_64BIT := python3 ultralib/tools/patch_64bit_compile.py
 
 IINC       := -Iultralib/include -Iultralib/include/gcc -Iultralib/include/PR -Iultralib/src -Ilibmus/src
 
-CFLAGS          := -nostdinc -fno-PIC -G 0 -mgp32 -mfp32
-MIPS_VERSION    := -mips3
+CFLAGS          := -nostdinc -fno-PIC -G 0
+REG_SIZES       := -mgp32 -mfp32
 WARNINGS        := -w
 COMMON_DEFINES  := -D_MIPS_SZLONG=32 -D__USE_ISOC99
 GBI_DEFINES     := -DF3DEX_GBI_2
@@ -66,14 +66,18 @@ C_DEFINES       := -D_LANGUAGE_C
 ifeq ($(VERSION),$(filter $(VERSION), us gw))
 OPTFLAGS        := -O3
 DBGFLAGS        :=
+MIPS_VERSION    := -mips3
 # libultra 2.0K
 LIBULTRA_VERSION:= 8
 else ifeq ($(VERSION),cn)
 CFLAGS          += -mcpu=4300 -mno-abicalls
 OPTFLAGS        := -O2
 DBGFLAGS        := -ggdb
-# libultra 2.0L
-LIBULTRA_VERSION:= 9
+MIPS_VERSION    := -mips2
+# libultra iQue (old ver.)
+#   TODO there are avail. libultra versions out there used in one
+#   of iQue games, go figure out the correct version for this.
+LIBULTRA_VERSION:= 10
 endif
 
 BUILD_DEFINES   += -DBUILD_VERSION=$(LIBULTRA_VERSION)
@@ -114,7 +118,35 @@ $(BUILD_DIR)/libmus/src/%.o:   RELEASE_DEFINES :=
 
 $(BUILD_DIR)/libmus/src/player.o:      DBGFLAGS :=
 $(BUILD_DIR)/libmus/src/player_fx.o:   DBGFLAGS :=
+$(BUILD_DIR)/ultralib/%.o:             DBGFLAGS :=
 
+ifeq ($(VERSION),cn)
+$(BUILD_DIR)/ultralib/src/os/virtualtophysical.o:  OPTFLAGS := -O0
+$(BUILD_DIR)/ultralib/src/os/createmesgqueue.o:    OPTFLAGS := -O0
+$(BUILD_DIR)/ultralib/src/os/recvmesg.o:           OPTFLAGS := -O0
+$(BUILD_DIR)/ultralib/src/os/createthread.o:       OPTFLAGS := -O0
+$(BUILD_DIR)/ultralib/src/os/startthread.o:        OPTFLAGS := -O0
+$(BUILD_DIR)/ultralib/src/os/stopthread.o:         OPTFLAGS := -O0
+$(BUILD_DIR)/ultralib/src/os/thread.o:             OPTFLAGS := -O0
+$(BUILD_DIR)/ultralib/src/os/gettime.o:            OPTFLAGS := -O0
+$(BUILD_DIR)/ultralib/src/os/settime.o:            OPTFLAGS := -O0
+$(BUILD_DIR)/ultralib/src/os/settimer.o:           OPTFLAGS := -O0
+$(BUILD_DIR)/ultralib/src/os/timerintr.o:          OPTFLAGS := -O0
+$(BUILD_DIR)/ultralib/src/os/initialize.o:         OPTFLAGS := -O0
+$(BUILD_DIR)/ultralib/src/os/jammesg.o:            OPTFLAGS := -O0
+$(BUILD_DIR)/ultralib/src/os/sendmesg.o:           OPTFLAGS := -O0
+$(BUILD_DIR)/ultralib/src/os/seteventmesg.o:       OPTFLAGS := -O0
+$(BUILD_DIR)/ultralib/src/reg/_%.o:                OPTFLAGS := -O0
+$(BUILD_DIR)/ultralib/src/reg/_%.o:                MIPS_VERSION := -mips3
+$(BUILD_DIR)/ultralib/src/reg/_%.o:                REG_SIZES := -mgp64 -mfp64
+$(BUILD_DIR)/ultralib/src/os/seteventmesg.o:       OPTFLAGS := -O0
+$(BUILD_DIR)/ultralib/src/os/destroythread.o:      OPTFLAGS := -O0
+$(BUILD_DIR)/ultralib/src/os/getthreadpri.o:       OPTFLAGS := -O0
+$(BUILD_DIR)/ultralib/src/os/setthreadpri.o:       OPTFLAGS := -O0
+$(BUILD_DIR)/ultralib/src/os/yieldthread.o:        OPTFLAGS := -O0
+$(BUILD_DIR)/ultralib/src/os/setglobalintmask.o:   OPTFLAGS := -O0
+$(BUILD_DIR)/ultralib/src/os/resetglobalintmask.o: OPTFLAGS := -O0
+endif
 
 #### Main Targets ###
 
@@ -131,7 +163,9 @@ distclean: clean
 .SECONDARY:
 
 $(BUILD_DIR)/%.o: %.s
-	$(CC) -c $(IINC) -I $(dir $*) $(WARNINGS) $(BUILD_DEFINES) $(COMMON_DEFINES) $(RELEASE_DEFINES) $(GBI_DEFINES) $(AS_DEFINES) $(CFLAGS) $(MIPS_VERSION) -x assembler-with-cpp -o $@ $<
+	$(CC) -c $(IINC) -I $(dir $*) $(WARNINGS) $(BUILD_DEFINES) $(COMMON_DEFINES) $(RELEASE_DEFINES) $(GBI_DEFINES) $(AS_DEFINES) $(CFLAGS) $(REG_SIZES) $(MIPS_VERSION) -x assembler-with-cpp -o $@ $<
+	$(PATCH_64BIT) $@
 
 $(BUILD_DIR)/%.o: %.c
-	$(CC) -c $(IINC) -I $(dir $*) $(WARNINGS) $(BUILD_DEFINES) $(COMMON_DEFINES) $(RELEASE_DEFINES) $(GBI_DEFINES) $(C_DEFINES) $(CFLAGS) $(MIPS_VERSION) $(OPTFLAGS) $(DBGFLAGS) -o $@ $<
+	$(CC) -c $(IINC) -I $(dir $*) $(WARNINGS) $(BUILD_DEFINES) $(COMMON_DEFINES) $(RELEASE_DEFINES) $(GBI_DEFINES) $(C_DEFINES) $(CFLAGS) $(REG_SIZES) $(MIPS_VERSION) $(OPTFLAGS) $(DBGFLAGS) -o $@ $<
+	$(PATCH_64BIT) $@
