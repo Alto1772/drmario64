@@ -233,6 +233,7 @@ segments:
       - [0x007D60, c, ../lib/ultralib/src/os/settime]
       - [0x007DA0, c, ../lib/ultralib/src/os/settimer]
       - [0x007F60, c, ../lib/ultralib/src/os/timerintr]
+
       - [0x008480, hasm, ../lib/ultralib/src/os/probetlb]
 
       - [0x008540, c, ../lib/ultralib/src/io/vigetcurrframebuf]
@@ -260,6 +261,7 @@ segments:
       - [0x009430, c, ../lib/ultralib/src/io/conteepprobe]
       - [0x009490, c, ../lib/ultralib/src/io/conteeplongwrite]
       - [0x009580, c, ../lib/ultralib/src/io/conteeplongread]
+
       - [0x009600, hasm, ../lib/ultralib/src/os/exceptasm]
       - [0x00A080, hasm, ../lib/ultralib/src/os/interrupt]
       - [0x00A110, hasm, ../lib/ultralib/src/os/setintmask]
@@ -313,6 +315,7 @@ segments:
       - [0x00E470, c, ../lib/ultralib/src/io/spsetstat]
       - [0x00E480, c, ../lib/ultralib/src/io/spsetpc]
       - [0x00E4B0, c, ../lib/ultralib/src/io/sprawdma]
+
       - [0x00E540, c, ../lib/ultralib/src/io/sirawread]
       - [0x00E590, c, ../lib/ultralib/src/io/sirawwrite]
 
@@ -320,11 +323,16 @@ segments:
       - [0x00E710, c, ../lib/ultralib/src/os/getthreadpri]
       - [0x00E760, c, ../lib/ultralib/src/os/setthreadpri]
       - [0x00E870, c, ../lib/ultralib/src/os/yieldthread]
+
       - [0x00E8D0, hasm, ../lib/ultralib/src/os/maptlbrdb]
       - [0x00E930, hasm, ../lib/ultralib/src/os/unmaptlball]
 
       - [0x00E980, c, ../lib/ultralib/src/io/vi]
       - [0x00EA80, c, ../lib/ultralib/src/io/vigetcurrcontext]
+
+      - [auto, c, ../lib/ultralib/src/vimodes/vimodentsclan1]
+      - [auto, c, ../lib/ultralib/src/vimodes/vimodepallan1]
+      - [auto, c, ../lib/ultralib/src/vimodes/vimodempallan1]
 
       - [0x00EA90, c, ../lib/ultralib/src/io/conteepread]
       - [0x00EB40, c, ../lib/ultralib/src/io/conteepwrite]
@@ -364,46 +372,70 @@ segments:
 
       - [0x0100F0, .data, gateway/003630]
 
-      # libultra
+      # Start of libultra
       - [0x010100, .data, ../lib/ultralib/src/io/aisetnextbuf]
+
       - [0x010110, .data, ../lib/ultralib/src/audio/env]
       - [0x010210, .data, ../lib/ultralib/src/audio/sl]
+
       - [0x010220, .data, ../lib/ultralib/src/io/controller]
+
       - [0x010230, .data, ../lib/ultralib/src/gu/rotaterpy]
       - [0x010240, .data, ../lib/ultralib/src/gu/sins]
+
       - [0x010A40, .data, ../lib/ultralib/src/sched/sched]
+
       - [0x010A50, .data, ../lib/ultralib/src/io/siacs]
+
       - [0x010A60, .data, ../lib/ultralib/src/os/thread]
       - [0x010A80, .data, ../lib/ultralib/src/os/timerintr]
+
       - [0x010A90, .data, ../lib/ultralib/src/io/vimgr]
       - [0x010AB0, .data, ../lib/ultralib/src/io/vitbl]
+
       - [0x011C30, .data, ../lib/ultralib/src/os/exceptasm]
+
       - [0x011C60, .data, ../lib/ultralib/src/io/pimgr]
       - [0x011C90, .data, ../lib/ultralib/src/io/cartrominit]
       - [0x011CA0, .data, ../lib/ultralib/src/io/piacs]
+
       - [0x011CB0, .data, ../lib/ultralib/src/os/initialize]
+
       - [0x011CD0, .data, ../lib/ultralib/src/audio/drvrnew]
+
       - [0x011E60, .data, ../lib/ultralib/src/os/seteventmesg]
+
       - [0x011E70, .data, ../lib/ultralib/src/io/vi]
-      - [0x011EE0, data, boot/libultra_data]
+
+      - [0x011EE0, .data, ../lib/ultralib/src/vimodes/vimodentsclan1]
+      - [0x011F30, .data, ../lib/ultralib/src/vimodes/vimodepallan1]
+      - [0x011F80, .data, ../lib/ultralib/src/vimodes/vimodempallan1]
+      # End of libultra
 
       # libnustd
       - [0x011FD0, .data, libnustd/ctype]
 
-      # libultra
+      # Start of libultra
       - [0x00120E0, .rodata, ../lib/ultralib/src/audio/env]
       - [0x0012180, .rodata, ../lib/ultralib/src/audio/synthesizer]
+
       - [0x0012190, .rodata, ../lib/ultralib/src/gu/cosf]
       - [0x00121E0, .rodata, ../lib/ultralib/src/gu/perspective]
       - [0x00121F0, .rodata, ../lib/ultralib/src/gu/sinf]
+
       - [0x0012240, .rodata, ../lib/ultralib/src/sched/sched]
+
       - [0x0012260, .rodata, ../lib/ultralib/src/os/exceptasm]
       - [0x00122B0, .rodata, ../lib/ultralib/src/os/setintmask]
+
       - [0x0012330, .rodata, ../lib/ultralib/src/io/devmgr]
+
       - [0x0012350, .rodata, ../lib/ultralib/src/audio/drvrnew]
       - [0x0012370, .rodata, ../lib/ultralib/src/audio/resample]
       - [0x00123A0, .rodata, ../lib/ultralib/src/audio/reverb]
+
       - [0x00123D0, .rodata, ../lib/ultralib/src/gu/libm_vals]
+      # End of libultra
 
       - [0x00123E0, .rodata, libegcs/libgcc2]
 
@@ -412,12 +444,13 @@ segments:
       - { start: 0x0124E0, type: bss, vram: 0x80015CB0, name: boot/80015CB0 }
       - { start: 0x0124E0, type: bss, vram: 0x80019CD0, name: gateway/003630 }
 
-      # libultra
+      # Start of libultra
       - { start: 0x0124E0, type: .bss, vram: 0x80019D50, name: ../lib/ultralib/src/io/sptask }
       - { start: 0x0124E0, type: .bss, vram: 0x80019D90, name: ../lib/ultralib/src/io/siacs }
       - { start: 0x0124E0, type: .bss, vram: 0x80019DA0, name: ../lib/ultralib/src/io/vimgr }
       - { start: 0x0124E0, type: .bss, vram: 0x8001AFC0, name: ../lib/ultralib/src/io/pimgr }
       - { start: 0x0124E0, type: .bss, vram: 0x8001C190, name: ../lib/ultralib/src/io/piacs }
+      # End of libultra
 
       - { start: 0x0124E0, type: .bss, vram: 0x8001C1A0, name: libnustd/srand }
       - { start: 0x0124E0, type: bss, vram: 0x8001C1B0, name: boot/8001C1B0 }
